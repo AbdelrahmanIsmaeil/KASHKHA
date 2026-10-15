@@ -58,7 +58,7 @@ class SignUpScreen extends StatelessWidget {
                           child: TextFormField(
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: AppColors.whiteGreyCLR,
+                              fillColor: AppColors.textFieldFillColor,
                               prefixIcon: Icon(Icons.person, color: AppColors.greyCLR,),
                               hintText: 'Enter your first name',
                               border: OutlineInputBorder(
@@ -79,7 +79,7 @@ class SignUpScreen extends StatelessWidget {
                           child: TextFormField(
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: AppColors.whiteGreyCLR,
+                              fillColor: AppColors.textFieldFillColor,
                               prefixIcon: Icon(Icons.person, color: AppColors.greyCLR,),
                               hintText: 'Enter your last name',
                               border: OutlineInputBorder(
@@ -101,7 +101,7 @@ class SignUpScreen extends StatelessWidget {
                     child: TextFormField(
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: AppColors.whiteGreyCLR,
+                        fillColor: AppColors.textFieldFillColor,
                         prefixIcon: Icon(Icons.email, color: AppColors.greyCLR,),
                         hintText: 'Enter your email address',
                         border: OutlineInputBorder(
@@ -120,7 +120,7 @@ class SignUpScreen extends StatelessWidget {
                     child: TextFormField(
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: AppColors.whiteGreyCLR,
+                        fillColor: AppColors.textFieldFillColor,
                         prefixIcon: Icon(Icons.lock_outline_rounded, color: AppColors.greyCLR,),
                         hintText: 'Enter your password',
                         border: OutlineInputBorder(
