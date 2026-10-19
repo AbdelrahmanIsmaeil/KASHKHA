@@ -9,7 +9,7 @@ class CustomTextField extends StatelessWidget {
     required this.title,
     required this.hintText,
     this.obscureText = false,
-    required this.prefixIcon, required this.validator,
+    required this.prefixIcon, required this.validator, required this.controller,
   });
 
   final String title;
@@ -17,6 +17,7 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
   final IconData prefixIcon;
   final String? Function(String?)? validator;
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +26,9 @@ class CustomTextField extends StatelessWidget {
       children: [
         Text(title, style: AppStyles.style12Bold),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: TextFormField(
+            controller: controller,
             validator: validator,
             obscureText: obscureText,
             decoration: InputDecoration(

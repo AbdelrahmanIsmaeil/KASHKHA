@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:kashkha/core/theme/app_colors.dart';
 import 'package:kashkha/core/theme/app_styles.dart';
@@ -5,6 +8,7 @@ import 'package:kashkha/features/authentication/presentation/screens/login_scree
 import 'package:kashkha/features/authentication/presentation/widgets/custom_text_field.dart';
 import 'package:kashkha/features/authentication/presentation/widgets/password_text_field.dart';
 import 'package:kashkha/features/authentication/presentation/widgets/validators.dart';
+import 'package:kashkha/features/home/presentation/screens/home_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -16,6 +20,28 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   bool isVisible = false;
   final GlobalKey<FormState> mykey = GlobalKey<FormState>();
+  final TextEditingController firstNameCtl = TextEditingController();
+  final TextEditingController lastNameCtl = TextEditingController();
+  final TextEditingController emailCtl = TextEditingController();
+  final TextEditingController passwordCtl = TextEditingController();
+  final TextEditingController confirmPasswordCtl = TextEditingController();
+
+  Future<void> signUp() async {
+    final Dio dio =Dio();
+    try {
+      final Response response = await dio.post("https://accessories-eshop.runasp.net/api/auth/register",
+      data : {
+          "email": emailCtl.text,
+          "password": passwordCtl.text,
+          "firstName": firstNameCtl.text,
+          "lastName": lastNameCtl.text
+        }
+      );
+    log("response $response");
+    } on DioException catch (e) {
+      log("Error : ${e.response!.data['errors']}");
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +55,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 children: [
                   Image.asset('assets/images/Frame.png', width: double.infinity, fit: BoxFit.contain,),
                   Positioned(
-                    top: 56,
+                    top: 50,
                     left: 26,
                     child: IconButton(
                       icon: Icon(Icons.arrow_back_ios,color: AppColors.blackCLR, size: 20,),
@@ -39,7 +65,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                   Positioned(
-                    top: 106,
+                    top: 110,
                     left: 30,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,9 +77,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   )
                 ],
               ),
-              SizedBox(height: 8,),
               Padding(
-                padding: const EdgeInsets.all(22),
+                padding: const EdgeInsets.symmetric(horizontal: 22),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -61,6 +86,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       children: [
                         Expanded(
                           child: CustomTextField(
+                            controller: firstNameCtl,
                             title: 'First Name',
                             hintText: 'First name',
                             prefixIcon: Icons.person,
@@ -72,6 +98,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         SizedBox(width: 10),
                         Expanded(
                           child: CustomTextField(
+                            controller: lastNameCtl,
                             title: 'Last Name',
                             hintText: 'Last name',
                             prefixIcon: Icons.person,
@@ -83,6 +110,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ],
                     ),
                     CustomTextField(
+                      controller: emailCtl,
                       title: 'Email Address',
                       hintText: 'Enter your email address',
                       prefixIcon: Icons.email,
@@ -91,6 +119,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       },
                     ),
                     PasswordTextField(
+                      controller: passwordCtl,
                       title: 'Password',
                       hintText: 'Enter your password',
                       prefixIcon: Icons.lock_outline_rounded,
@@ -99,8 +128,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         return Validator.validatePassword(password ?? '');
                       },
                     ),
+                    PasswordTextField(
+                      controller: confirmPasswordCtl,
+                      title: 'Confirm Password',
+                      hintText: 'Confirm your password',
+                      prefixIcon: Icons.lock_outline_rounded,
+                      obscureText: true,
+                      validator: (password) {
+                        return Validator.validatePassword(password ?? '');
+                      },
+                    ),
                     SizedBox(
-                      height: 48,
+                      height: 30,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -128,6 +167,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: ElevatedButton(
                         onPressed: (){
                           if (mykey.currentState!.validate()) {
+                            log('First Name: ${firstNameCtl.text}');
+                            log('Last Name: ${lastNameCtl.text}');
+                            log('Email: ${emailCtl.text}');
+                            log('Password:  ${passwordCtl.text}');
+                            log('Confirm Password:   ${confirmPasswordCtl.text}');
+                            signUp();
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => const LoginScreen()),
+                            );
                         }
                         }, 
                         style: ElevatedButton.styleFrom(
@@ -140,7 +189,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         child: Text('Create account'),
                       ),
                     ),
-                    SizedBox(height: 10,),
+                    SizedBox(height: 2,),
                     Row(
                       children: [
                       Expanded(child: Divider(color: AppColors.greyCLR,)),
@@ -150,7 +199,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ), 
                       Expanded(child: Divider(color: AppColors.greyCLR,)), 
                     ],),
-                    SizedBox(height: 18,),
+                    SizedBox(height: 2,),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -165,7 +214,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         child: Text('Continue with Google', style: AppStyles.style13Bold),
                       ),
                     ),
-                    SizedBox(height: 15,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

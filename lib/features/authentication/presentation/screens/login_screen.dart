@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:kashkha/core/theme/app_colors.dart';
 import 'package:kashkha/core/theme/app_styles.dart';
@@ -5,6 +8,7 @@ import 'package:kashkha/features/authentication/presentation/screens/sign_up_scr
 import 'package:kashkha/features/authentication/presentation/widgets/custom_text_field.dart';
 import 'package:kashkha/features/authentication/presentation/widgets/password_text_field.dart';
 import 'package:kashkha/features/authentication/presentation/widgets/validators.dart';
+import 'package:kashkha/features/home/presentation/screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,6 +19,23 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> myKey = GlobalKey<FormState>();
+    final TextEditingController emailCtl = TextEditingController();
+    final TextEditingController passwordCtl = TextEditingController();
+  
+  Future<void> login() async {
+    final Dio dio =Dio();
+    try {
+      final Response response = await dio.post("https://accessories-eshop.runasp.net/api/auth/login",
+      data : {
+          "email": emailCtl.text,
+          "password": passwordCtl.text,
+        }
+      );
+    log("response $response");
+    } on DioException catch (e) {
+      log("Error : ${e.response!.data['errors']}");
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,6 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomTextField(
+                      controller: emailCtl,
                       title: 'Email Address',
                       hintText: 'Enter your email address',
                       prefixIcon: Icons.email,
@@ -59,6 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                     PasswordTextField(
+                      controller: passwordCtl,
                       title: 'Password',
                       hintText: 'Enter your password',
                       prefixIcon: Icons.lock_outline_rounded,
@@ -104,6 +127,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: ElevatedButton(
                         onPressed: (){
                             if (myKey.currentState!.validate()) {
+                              login();
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                           } 
                         }, 
                         style: ElevatedButton.styleFrom(
