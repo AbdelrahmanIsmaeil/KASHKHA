@@ -21,7 +21,10 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> myKey = GlobalKey<FormState>();
     final TextEditingController emailCtl = TextEditingController();
     final TextEditingController passwordCtl = TextEditingController();
-  
+    
+    String? accessToken;
+    String? refreshToken;
+
   Future<void> login() async {
     final Dio dio =Dio();
     try {
@@ -31,7 +34,27 @@ class _LoginScreenState extends State<LoginScreen> {
           "password": passwordCtl.text,
         }
       );
-    log("response $response");
+      log('Login response: ${response.data}');
+      
+    accessToken = response.data['accessToken'];
+    refreshToken = response.data['refreshToken'];
+    
+    if (accessToken == null || refreshToken == null) {
+      log('Access token or refresh token is missing');
+      return;
+    }
+
+    if (!mounted) return;
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HomeScreen(
+          accessToken: accessToken!,
+          refreshToken: refreshToken!,
+        ),
+      ),
+    );
     } on DioException catch (e) {
       log("Error : ${e.response!.data['errors']}");
     }
@@ -128,7 +151,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: (){
                             if (myKey.currentState!.validate()) {
                               login();
-                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                           } 
                         }, 
                         style: ElevatedButton.styleFrom(

@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:kashkha/core/theme/app_colors.dart';
 import 'package:kashkha/features/authentication/presentation/screens/login_screen.dart';
 import 'package:kashkha/features/authentication/presentation/screens/sign_up_screen.dart';
-// import 'package:kashkha/features/authentication/presentation/screens/login_screen.dart';
-// import 'package:kashkha/features/authentication/presentation/screens/sign_up_screen.dart';
-// import 'package:kashkha/features/authentication/presentation/screens/verify_email.dart';
 import 'package:kashkha/features/home/presentation/screens/home_screen.dart';
 
 void main() {
@@ -22,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: AppColors.whiteCLR,
       ),
-      home: const SignUpScreen(),
+      home: const LoginScreen(),
     );
   }
 }

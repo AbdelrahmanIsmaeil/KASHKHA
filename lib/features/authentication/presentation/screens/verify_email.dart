@@ -1,12 +1,60 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:kashkha/core/theme/app_colors.dart';
-import 'package:kashkha/core/theme/app_styles.dart' show AppStyles;
-import 'package:kashkha/features/authentication/presentation/screens/sign_up_screen.dart';
+import 'package:kashkha/core/theme/app_styles.dart';
+import 'package:kashkha/features/authentication/presentation/screens/login_screen.dart';
+import 'package:kashkha/features/authentication/presentation/widgets/otp_text_field.dart';
 
-class VerifyEmail extends StatelessWidget {
-  const VerifyEmail({super.key});
+class VerifyEmail extends StatefulWidget {
+  const VerifyEmail({super.key, required this.email});
+  final String email;
 
+  @override
+  State<VerifyEmail> createState() => _VerifyEmailState();
+}
+
+class _VerifyEmailState extends State<VerifyEmail> {
+  final List<TextEditingController> controllers = [
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+  ];
+  final List<FocusNode> focusNodes = [
+  FocusNode(),
+  FocusNode(),
+  FocusNode(),
+  FocusNode(),
+  FocusNode(),
+  FocusNode(),
+];
+  @override
+void dispose() {
+  controllers[0].dispose();
+  controllers[1].dispose();
+  controllers[2].dispose();
+  controllers[3].dispose();
+  controllers[4].dispose();
+  controllers[5].dispose();
+  focusNodes[0].dispose();
+  focusNodes[1].dispose();
+  focusNodes[2].dispose();
+  focusNodes[3].dispose();
+  focusNodes[4].dispose();
+  focusNodes[5].dispose();
+  super.dispose();
+}
+  void onOtpChanged(String value, int index) {
+  if (value.isNotEmpty && index < 5) {
+    focusNodes[index + 1].requestFocus();
+  }
+  if (value.isEmpty && index > 0) {
+    focusNodes[index - 1].requestFocus();
+  }
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +63,7 @@ class VerifyEmail extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: AppColors.blackCLR, size: 20,),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
           },
         
       ),
@@ -38,7 +86,7 @@ class VerifyEmail extends StatelessWidget {
               SizedBox(height: 20,),
               Text('Verify your email', style: AppStyles.style25Bold. copyWith(color: AppColors.redCLR),),
               Text('We sent a 6-digit code to', style: AppStyles.style13Regular.copyWith(color: AppColors.greyCLR),),
-              Text('maya@example.com', style: AppStyles.style13Bold.copyWith(color: AppColors.blackCLR),),
+              Text(widget.email, style: AppStyles.style13Bold.copyWith(color: AppColors.blackCLR),),
               SizedBox(height: 20,),
               SizedBox(
                 height: 100,
@@ -53,7 +101,10 @@ class VerifyEmail extends StatelessWidget {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          OTPTextField(),
+                          OTPTextField(controller: controllers[index], focusNode: focusNodes[index],
+                            onChanged: (value) {
+                              onOtpChanged(value, index);
+                          },),
                         ],
                       ),
                     );
@@ -64,7 +115,15 @@ class VerifyEmail extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: (){}, 
+                  onPressed: (){
+                    String code = controllers[0].text +
+                        controllers[1].text +
+                        controllers[2].text +
+                        controllers[3].text +
+                        controllers[4].text +
+                        controllers[5].text;
+                    log('Code: $code');
+                  }, 
                   style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.redCLR,
                   foregroundColor: AppColors.blackCLR,
@@ -82,45 +141,6 @@ class VerifyEmail extends StatelessWidget {
                 child: Text('Resend code in 00:29', style: AppStyles.style13Bold.copyWith(color: AppColors.redCLR),),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class OTPTextField extends StatelessWidget {
-  const OTPTextField({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 52,
-      height: 65,
-      child: Card(
-        elevation: 5,
-        color: AppColors.whiteGreyCLR,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: TextFormField(
-          cursorColor: AppColors.redCLR,
-          style: AppStyles.style16ExtraBold.copyWith(color: AppColors.blackCLR),
-          keyboardType: TextInputType.number,
-          textAlign: TextAlign.center,
-          inputFormatters: [
-            LengthLimitingTextInputFormatter(1),
-            FilteringTextInputFormatter.digitsOnly,
-          ],
-          decoration: InputDecoration(
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.greyCLR,),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.redCLR, width: 3),
-            ),
           ),
         ),
       ),

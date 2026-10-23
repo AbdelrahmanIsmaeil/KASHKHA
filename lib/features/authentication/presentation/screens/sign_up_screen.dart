@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:kashkha/core/theme/app_colors.dart';
 import 'package:kashkha/core/theme/app_styles.dart';
 import 'package:kashkha/features/authentication/presentation/screens/login_screen.dart';
+import 'package:kashkha/features/authentication/presentation/screens/verify_email.dart';
 import 'package:kashkha/features/authentication/presentation/widgets/custom_text_field.dart';
 import 'package:kashkha/features/authentication/presentation/widgets/password_text_field.dart';
 import 'package:kashkha/features/authentication/presentation/widgets/validators.dart';
-import 'package:kashkha/features/home/presentation/screens/home_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -19,12 +19,23 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   bool isVisible = false;
+  bool agreed = false;
   final GlobalKey<FormState> mykey = GlobalKey<FormState>();
   final TextEditingController firstNameCtl = TextEditingController();
   final TextEditingController lastNameCtl = TextEditingController();
   final TextEditingController emailCtl = TextEditingController();
   final TextEditingController passwordCtl = TextEditingController();
   final TextEditingController confirmPasswordCtl = TextEditingController();
+
+  @override
+  void dispose() {
+    firstNameCtl.dispose();
+    lastNameCtl.dispose();
+    emailCtl.dispose();
+    passwordCtl.dispose();
+    confirmPasswordCtl.dispose();
+    super.dispose();
+  }
 
   Future<void> signUp() async {
     final Dio dio =Dio();
@@ -38,6 +49,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         }
       );
     log("response $response");
+    Navigator.push(context, MaterialPageRoute(builder: (context) => VerifyEmail(email: emailCtl.text.trim())),
+    );
     } on DioException catch (e) {
       log("Error : ${e.response!.data['errors']}");
     }
@@ -54,16 +67,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 alignment: Alignment.center,
                 children: [
                   Image.asset('assets/images/Frame.png', width: double.infinity, fit: BoxFit.contain,),
-                  Positioned(
-                    top: 50,
-                    left: 26,
-                    child: IconButton(
-                      icon: Icon(Icons.arrow_back_ios,color: AppColors.blackCLR, size: 20,),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
                   Positioned(
                     top: 110,
                     left: 30,
@@ -135,7 +138,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       prefixIcon: Icons.lock_outline_rounded,
                       obscureText: true,
                       validator: (password) {
-                        return Validator.validatePassword(password ?? '');
+                        if (password == null || password.isEmpty) {
+                          return 'Please confirm your password';
+                        }
+                        if (password != passwordCtl.text) {
+                          return 'Passwords do not match';
+                        }
+                        return Validator.validatePassword(password);
                       },
                     ),
                     SizedBox(
@@ -147,8 +156,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Checkbox(
-                                value: false,
-                                onChanged: (value) {},
+                                value: agreed,
+                                onChanged: (value) {
+                                  setState(() {
+                                    agreed = value ?? false;
+                                  });
+                                },
                                 activeColor: AppColors.redCLR,
                               ),
                               Text(
@@ -167,16 +180,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: ElevatedButton(
                         onPressed: (){
                           if (mykey.currentState!.validate()) {
-                            log('First Name: ${firstNameCtl.text}');
-                            log('Last Name: ${lastNameCtl.text}');
-                            log('Email: ${emailCtl.text}');
-                            log('Password:  ${passwordCtl.text}');
-                            log('Confirm Password:   ${confirmPasswordCtl.text}');
                             signUp();
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) => const LoginScreen()),
-                            );
                         }
                         }, 
                         style: ElevatedButton.styleFrom(
